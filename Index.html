@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>707 ARTA VVIP | Professional Recovery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #0066ff;
+            --bg-deep: #020617;
+            --card-bg: rgba(15, 23, 42, 0.85);
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.98)),
+                        url('https://files.catbox.moe/s9rrwq.jpeg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+        }
+
+        .matrix-canvas {
+            position: fixed;
+            top: 0; left: 0; z-index: -1;
+            opacity: 0.15;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+            filter: brightness(1.2);
+        }
+
+        .status-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background-color: #10b981;
+            display: inline-block;
+            animation: pulse-slow 2s infinite;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .hidden { display: none; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .terminal-text {
+            border-right: 2px solid var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 2s steps(40, end), cursor .4s step-end infinite alternate;
+        }
+
+        @keyframes cursor { 50% { border-color: transparent } }
+    </style>
+</head>
+<body>
+    <div class="bg-overlay"></div>
+    <canvas id="matrix" class="matrix-canvas"></canvas>
+
+    <div id="main-app" class="min-h-screen flex items-center justify-center p-6">
+        
+        <!-- LOGIN SECTION -->
+        <div id="login-container" class="w-full max-w-md animate-in fade-in zoom-in duration-500">
+            <div class="text-center mb-10">
+                <div class="relative inline-block">
+                    <img src="https://files.catbox.moe/rnjac8.jpeg" alt="Logo" class="w-24 h-24 mx-auto rounded-full border-4 border-cyan-500/30 mb-4 shadow-2xl object-cover">
+                    <div class="absolute inset-0 rounded-full animate-ping border border-cyan-500 opacity-20"></div>
+                </div>
+                <h1 class="text-5xl font-black tracking-tighter mono text-white">707 ARTA <span class="text-cyan-400">VVIP</span></h1>
+                <p class="text-[10px] text-slate-500 mt-3 uppercase tracking-[0.5em] font-bold">Elite Account Recovery Solutions</p>
+            </div>
+
+            <div class="glass-card p-10 rounded-3xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+                <div class="space-y-6">
+                    <div class="group">
+                        <label class="block text-[10px] text-slate-500 mb-2 ml-1 uppercase font-bold tracking-widest group-focus-within:text-cyan-400 transition-colors">Identity Key</label>
+                        <input type="text" id="user-input" placeholder="USERNAME" class="w-full bg-slate-900/80 border border-slate-800 p-4 rounded-xl text-white text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-all">
+                    </div>
+                    <div class="group">
+                        <label class="block text-[10px] text-slate-500 mb-2 ml-1 uppercase font-bold tracking-widest group-focus-within:text-cyan-400 transition-colors">Access Token</label>
+                        <input type="password" id="pass-input" placeholder="PASSWORD" class="w-full bg-slate-900/80 border border-slate-800 p-4 rounded-xl text-white text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-all">
+                    </div>
+                    <button onclick="handleLogin()" class="w-full btn-action py-4 rounded-xl text-sm shadow-xl">Decrypt Access</button>
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-800/50">
+                        <button onclick="showAdminLogin()" class="text-[9px] text-slate-500 hover:text-cyan-400 transition-all uppercase font-bold tracking-tighter">System Root</button>
+                        <span class="text-[9px] text-slate-600 mono">SECURE_BUILD_V7.1.0</span>
+                    </div>
+                </div>
+                <p id="error-msg" class="text-red-500 text-[10px] mt-4 text-center hidden mono font-bold">ACCESS_DENIED: UNAUTHORIZED_CREDENTIALS</p>
+            </div>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboard-container" class="w-full max-w-6xl hidden animate-in slide-in-from-bottom-10 duration-700">
+            <header class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
+                <div class="flex items-center gap-5">
+                    <div class="p-1 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-2xl">
+                        <img src="https://files.catbox.moe/rnjac8.jpeg" class="w-16 h-16 rounded-xl object-cover">
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-black text-white mono tracking-tighter uppercase">707_ARTA_CORE</h2>
+                        <div class="flex items-center gap-3 text-[11px] mt-1">
+                            <span class="status-dot"></span>
+                            <span class="text-emerald-400 font-bold tracking-widest">ENCRYPTION: AES-256</span>
+                            <span class="text-slate-600">|</span>
+                            <span class="text-slate-300">USER: <span id="user-name-display" class="text-cyan-400">GUEST</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex items-center gap-6 shadow-lg">
+                    <div class="text-right">
+                        <p class="text-[9px] text-slate-500 uppercase font-bold">Terminal IP</p>
+                        <p id="ip-display" class="text-sm font-bold text-cyan-400 mono tracking-tighter">0.0.0.0</p>
+                    </div>
+                    <button onclick="logout()" class="p-3 bg-red-500/10 hover:bg-red-500/20 rounded-xl text-red-500 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Main Tools -->
+                <div class="lg:col-span-8 space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-card p-8 rounded-3xl relative overflow-hidden group border-l-4 border-cyan-500">
+                            <h3 class="text-xl font-bold text-white mb-3">Unban Spam</h3>
+                            <p class="text-xs text-slate-400 mb-8 leading-relaxed">Protokol pemulihan cepat untuk nomor yang terindikasi melakukan spam berulang secara sistemik.</p>
+                            <button onclick="triggerUnban('SPAM')" class="btn-action w-full py-3 rounded-xl text-xs font-bold">Start Bypass</button>
+                        </div>
+                        <div class="glass-card p-8 rounded-3xl relative overflow-hidden group border-l-4 border-blue-600">
+                            <h3 class="text-xl font-bold text-white mb-3">Unban Permanent</h3>
+                            <p class="text-xs text-slate-400 mb-8 leading-relaxed">Injeksi banding tingkat lanjut untuk akun yang terkena blokir permanen dari server Meta.</p>
+                            <button onclick="triggerUnban('PERMANENT')" class="btn-action w-full py-3 rounded-xl text-xs font-bold from-blue-700 to-indigo-600">Force Appeal</button>
+                        </div>
+                    </div>
+
+                    <!-- History Table -->
+                    <div class="glass-card p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                System Logs
+                            </h3>
+                            <button onclick="clearLogs()" class="text-[10px] text-red-500/70 hover:text-red-500 font-bold uppercase transition-colors">Wipe History</button>
+                        </div>
+                        <div class="space-y-4 max-h-80 overflow-y-auto pr-2" id="log-list">
+                            <!-- Logs injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Panel -->
+                <div class="lg:col-span-4 space-y-8">
+                    <div class="glass-card p-8 rounded-3xl bg-gradient-to-br from-slate-900/95 to-black border-t-2 border-cyan-500/20">
+                        <h3 class="text-sm font-bold text-white mb-6 uppercase tracking-widest border-b border-white/5 pb-4">Operational Manual</h3>
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 font-bold text-xs shrink-0">1</div>
+                                <p class="text-[11px] text-slate-400 leading-relaxed">Input nomor target dengan kode negara lengkap (Contoh: <span class="text-white font-mono">+62812xxxx</span>).</p>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 font-bold text-xs shrink-0">2</div>
+                                <p class="text-[11px] text-slate-400 leading-relaxed">Pilih modul bypass sesuai kategori pemblokiran yang dialami target.</p>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 font-bold text-xs shrink-0">3</div>
+                                <p class="text-[11px] text-slate-400 leading-relaxed">Tunggu proses enkripsi selesai. Sistem akan otomatis menyusun dokumen banding legal.</p>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 font-bold text-xs shrink-0">4</div>
+                                <p class="text-[11px] text-slate-400 leading-relaxed">Kirim email yang sudah terisi otomatis melalui aplikasi Gmail Anda.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-3xl overflow-hidden h-56 group relative">
+                        <img src="https://files.catbox.moe/uzc5jo.jpeg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Terminal Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TERMINAL MODAL -->
+    <div id="modal" class="fixed inset-0 bg-black/98 z-[100] flex items-center justify-center p-6 hidden">
+        <div class="w-full max-w-2xl glass-card rounded-2xl overflow-hidden border-cyan-500/40 shadow-[0_0_50px_rgba(0,242,255,0.2)]">
+            <div class="bg-slate-900 px-5 py-3 flex items-center justify-between border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <div class="flex gap-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                    </div>
+                    <span class="text-[10px] mono text-cyan-500 ml-4">INJECTOR@707-ARTA_V7:~</span>
+                </div>
+                <span id="terminal-percent" class="text-[10px] text-white font-black mono">0%</span>
+            </div>
+            <div id="terminal-out" class="p-8 h-96 overflow-y-auto font-mono text-xs text-cyan-400 space-y-2 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN MODAL -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6 hidden">
+        <div class="w-full max-w-sm glass-card p-10 rounded-3xl border-red-500/30">
+            <h2 class="text-red-500 font-black text-center mb-8 mono tracking-[0.3em] uppercase">Root Authority</h2>
+            
+            <div id="admin-login-stage" class="space-y-6">
+                <input type="password" id="admin-pw" placeholder="ROOT_PASSWORD" class="w-full bg-black border border-red-900/40 p-4 rounded-xl text-red-500 text-center text-xl tracking-[0.8em] focus:outline-none focus:border-red-500 transition-all">
+                <button onclick="checkAdminAccess()" class="w-full bg-red-600/10 text-red-500 border border-red-500/50 py-4 rounded-xl font-black hover:bg-red-600 hover:text-white transition-all uppercase text-xs tracking-widest">Authorize Access</button>
+                <button onclick="closeAdmin()" class="w-full text-[10px] text-slate-600 uppercase font-bold tracking-widest hover:text-slate-400">Abort Session</button>
+            </div>
+            
+            <div id="admin-controls" class="hidden space-y-6 pt-6 border-t border-red-900/20">
+                <p class="text-[10px] text-slate-500 text-center uppercase tracking-widest font-bold">New Identity Registration</p>
+                <input type="text" id="new-u" placeholder="New Username" class="w-full bg-slate-900/80 border border-slate-700 p-3 text-xs text-white rounded-xl focus:border-cyan-500 outline-none">
+                <input type="text" id="new-p" placeholder="New Access Pass" class="w-full bg-slate-900/80 border border-slate-700 p-3 text-xs text-white rounded-xl focus:border-cyan-500 outline-none">
+                <button onclick="saveMember()" class="w-full bg-cyan-600 text-white py-3 rounded-xl text-xs font-black shadow-lg shadow-cyan-900/20">Incorporate User</button>
+                <button onclick="closeAdmin()" class="w-full text-[10px] text-slate-600 text-center font-bold uppercase">Exit Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Canvas Core
+        const c = document.getElementById("matrix");
+        const ctx = c.getContext("2d");
+        function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        const chars = "707ARTA0101";
+        const drops = Array(Math.floor(c.width/20)).fill(1);
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(2, 6, 23, 0.08)"; ctx.fillRect(0, 0, c.width, c.height);
+            ctx.fillStyle = "#0ff2ff"; ctx.font = "14px monospace";
+            for(let i=0; i<drops.length; i++) {
+                ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*20, drops[i]*20);
+                if(drops[i]*20 > c.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 60);
+
+        // State Management
+        let members = JSON.parse(localStorage.getItem('arta_vvip_members')) || [{u: 'arta', p: '707'}];
+        let logs = JSON.parse(localStorage.getItem('arta_vvip_logs')) || [];
+
+        function updateLogsUI() {
+            const list = document.getElementById('log-list');
+            list.innerHTML = logs.length === 0 ? '<div class="text-center py-10 opacity-30 italic text-xs">No activity detected on this terminal...</div>' : '';
+            logs.forEach(log => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-4 bg-slate-900/40 rounded-2xl border border-white/5 hover:border-cyan-500/20 transition-all group";
+                div.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-xs mono text-cyan-400 font-bold group-hover:text-white transition-colors">${log.phone}</span>
+                        <span class="text-[9px] text-slate-500 mt-1 uppercase">${log.time}</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[9px] px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg font-bold border border-white/5 uppercase tracking-tighter">${log.type}</span>
+                        <span class="text-[10px] ${log.status === 'SUCCESS' ? 'text-emerald-500' : 'text-yellow-500'} font-black italic">[${log.status}]</span>
+                    </div>
+                `;
+                list.prepend(div);
+            });
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('user-input').value.toLowerCase();
+            const p = document.getElementById('pass-input').value;
+            const user = members.find(m => m.u === u && m.p === p);
+            
+            if(user) {
+                document.getElementById('user-name-display').innerText = u.toUpperCase();
+                document.getElementById('ip-display').innerText = `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*100)}.1`;
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('dashboard-container').classList.remove('hidden');
+                updateLogsUI();
+            } else {
+                const err = document.getElementById('error-msg');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 2500);
+            }
+        }
+
+        // Admin System
+        function showAdminLogin() { 
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-login-stage').classList.remove('hidden');
+            document.getElementById('admin-controls').classList.add('hidden');
+        }
+        function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
+        function checkAdminAccess() {
+            if(document.getElementById('admin-pw').value === "arta707") {
+                document.getElementById('admin-login-stage').classList.add('hidden');
+                document.getElementById('admin-controls').classList.remove('hidden');
+            } else { alert("SECURITY BREACH: WRONG PASSWORD!"); }
+        }
+        function saveMember() {
+            const u = document.getElementById('new-u').value.toLowerCase();
+            const p = document.getElementById('new-p').value;
+            if(!u || !p) return alert("Fields cannot be empty!");
+            members.push({u: u, p: p});
+            localStorage.setItem('arta_vvip_members', JSON.stringify(members));
+            alert(`ID REGISTERED: ${u}`);
+            document.getElementById('new-u').value = ""; document.getElementById('new-p').value = "";
+            closeAdmin();
+        }
+
+        // Professional Unban Protocol
+        async function triggerUnban(type) {
+            const phone = prompt("PLEASE ENTER THE BANNED WHATSAPP NUMBER (+628...):", "+628");
+            if(!phone || phone.length < 10) return;
+
+            document.getElementById('modal').classList.remove('hidden');
+            const out = document.getElementById('terminal-out');
+            const perc = document.getElementById('terminal-percent');
+            out.innerHTML = "";
+            
+            const steps = [
+                `[*] INITIALIZING 707_ARTA VVIP BYPASS ENGINE...`,
+                `[*] TARGET_IDENTITY: ${phone}`,
+                `[*] ESTABLISHING ENCRYPTED TUNNEL TO META_OS_V2...`,
+                `[*] SCANNING SECURITY PROTOCOLS... [OK]`,
+                `[*] BYPASSING FIREWALL LAYERS 1-7...`,
+                `[*] INJECTING RECOVERY_SQL_PACKET_${type}...`,
+                `[*] CALCULATING CHECKSUM FOR DECRYPTION...`,
+                `[*] GENERATING LEGAL APPEAL DOCUMENTS...`,
+                `[*] FINALIZING SYSTEM_REQUEST_ID: ${Math.floor(Math.random()*1000000)}`,
+                `[*] STATUS: [COMPLETED] - REDIRECTING TO GMAIL...`
+            ];
+
+            for(let i=0; i<steps.length; i++) {
+                let p = document.createElement('p');
+                p.className = "animate-pulse";
+                p.innerText = steps[i];
+                out.appendChild(p);
+                out.scrollTop = out.scrollHeight;
+                
+                // Animasi persentase
+                let currentP = Math.floor(((i+1)/steps.length)*100);
+                perc.innerText = currentP + "%";
+                
+                await new Promise(r => setTimeout(r, 650));
+            }
+
+            // Save Activity Log
+            const newLog = {
+                phone: phone,
+                type: type,
+                status: 'PROCESSED',
+                time: new Date().toLocaleTimeString()
+            };
+            logs.push(newLog);
+            localStorage.setItem('arta_vvip_logs', JSON.stringify(logs));
+            updateLogsUI();
+
+            // PROFESSIONAL EMAIL TEMPLATE
+            const subject = encodeURIComponent(`Urgent: Appeal for Account Re-activation - ${phone}`);
+            
+            const longBody = `Kepada Tim Dukungan WhatsApp (WhatsApp Support Team),
+
+Saya menulis email ini sebagai permohonan resmi untuk peninjauan kembali atas pemblokiran akun WhatsApp saya dengan nomor telepon: ${phone}.
+
+Beberapa waktu yang lalu, akun saya dinonaktifkan secara tiba-tiba tanpa ada pemberitahuan atau indikasi pelanggaran sebelumnya. Setelah mempelajari Ketentuan Layanan WhatsApp dengan saksama, saya yakin bahwa saya tidak melakukan aktivitas yang melanggar kebijakan keamanan, spam, maupun perilaku yang merugikan pengguna lain.
+
+Berikut adalah detail informasi akun saya:
+- Nomor Telepon: ${phone}
+- Perangkat: Mobile Device (Android/iOS)
+- Kategori Masalah: ${type === 'SPAM' ? 'Indikasi Spam (False Positive)' : 'Pemblokiran Permanen'}
+- Request ID: ARTA-RECOVERY-${Math.floor(Math.random()*999999)}
+
+Akun ini sangat krusial bagi saya karena digunakan untuk keperluan komunikasi profesional dan personal sehari-hari. Pemblokiran ini sangat menghambat produktivitas saya. Saya berkomitmen untuk tetap mematuhi seluruh aturan WhatsApp di masa mendatang dan bersedia mengikuti prosedur verifikasi tambahan jika diperlukan.
+
+Saya mohon agar tim teknis dapat melakukan audit mendalam terhadap log aktivitas nomor ${phone} dan memulihkan akses akun saya segera mungkin.
+
+Terima kasih atas bantuan dan kerja keras tim dukungan WhatsApp dalam menjaga komunitas tetap aman. Saya menantikan kabar baik dari Anda.
+
+Hormat saya,
+Pengguna WhatsApp Setia
+--------------------------------------------------
+[SYSTEM_GENERATED_BY_707_ARTA_VVIP]
+TIMESTAMP: ${new Date().toISOString()}
+AUTH_TOKEN: ${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=support@whatsapp.com&su=${subject}&body=${encodeURIComponent(longBody)}`;
+            
+            // Redirect
+            window.open(gmailUrl, '_blank');
+            setTimeout(() => {
+                document.getElementById('modal').classList.add('hidden');
+            }, 500);
+        }
+
+        function clearLogs() {
+            if(confirm("WIPE ALL TERMINAL HISTORY?")) {
+                logs = [];
+                localStorage.setItem('arta_vvip_logs', JSON.stringify(logs));
+                updateLogsUI();
+            }
+        }
+
+        function logout() { location.reload(); }
+    </script>
+</body>
+</html>
